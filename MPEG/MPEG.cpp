@@ -11,8 +11,20 @@
 #include "stdafx.h"
 #include <vector>
 
+//implements SAE-function between two 16x16 pixel-blocks
+int SAEfunction(std::vector<std::vector<int>> previousBlock, std::vector<std::vector<int>> currentBlock)
+{
+	int result = 0;
+	for (int i = 0; i < 16; i++)
+	{
+		for (int j = 0; j < 16; j++)
+		{
+			result += abs(currentBlock.at(i).at(j) - previousBlock.at(i).at(j));
+		}
+	}
 
-
+	return result;
+}
 
 bool reconstructImageByMotion(Image& result, Image& imagePrev, Image& imageCurr) 
 {
@@ -26,7 +38,8 @@ bool reconstructImageByMotion(Image& result, Image& imagePrev, Image& imageCurr)
 	result = imagePrev.clone();
 
 	std::cout << "Hoehe: " << w << ", " << "Breite: " << h << std::endl;
-	
+	int numberOfBlocks = (int)(w / 16) * (h / 16);
+
 	//turn raw data of current image into vector for easier handling
 	unsigned char * dataArrayCurrent = imageCurr.getBuffer();
 	std::vector<std::vector<int>> vectorDataCurrent(imageCurr.getHeight(), std::vector<int>(imageCurr.getWidth()));
@@ -60,8 +73,9 @@ bool reconstructImageByMotion(Image& result, Image& imagePrev, Image& imageCurr)
 	// create vector which is able to accommodate vectors of type MxN
 	std::vector<std::vector<std::vector<int>>> vectorPixelBocks;
     
-	// create temp-vector for 16x16 pixel-block
+	// create temp-vectors for 16x16 pixel-blocks
 	std::vector<std::vector<int>> tempBlock(16, std::vector<int>(16));
+	std::vector<std::vector<int>> tempSAEblock(16, std::vector<int>(16));
 	
 	// fill vectorPixelBlocks with 16x16 pixel-blocks
 	for (int line = 0; line < imageCurr.getHeight(); line += 16)
@@ -79,43 +93,100 @@ bool reconstructImageByMotion(Image& result, Image& imagePrev, Image& imageCurr)
 		}
 	}
 
-	// check if current image has been corrupted by conversion into vector 
+	unsigned char * currDataArray;
+	currDataArray = (unsigned char*)malloc((int)imageCurr.getSize() * sizeof(unsigned char));
+	int currDataArrayPointer = 0;
+	int PixelBlockPointer = 0;
 	
+	
+
+		for (int col = 0; col < imageCurr.getWidth(); col++)
+		{
+
+			currDataArray[currDataArrayPointer++] = vectorDataCurrent.at(line).at(col % 16);
+
+		}
+	
+	
+
+
+	/*
+	for (int line2 = 0; line2 < imageCurr.getHeight(); line2++)
+	{
+		
+			for (int col2 = 0; col2 < 16; col2++)
+			{
+				currDataArray[currDataArrayPointer++] = vectorPixelBocks.at(block).at(line2).at(col2);
+			}
+		
+	}
+	*/
+
+	// conversion back into array from vector
+	/*
+	for (int line = 0; line < imageCurr.getHeight(); line++)
+	{
+		for (int col = 0; col < imageCurr.getWidth(); col++)
+		{
+			
+			currDataArray[currDataArrayPointer++] = vectorDataCurrent.at(line).at(col);
+			
+		}
+	}
+	*/
+
+
+	/*
+	// initiate SAE-search between imageCurr and imagePrev
+	int currentVectorPointer = 0;
+
+	for (int a = 0; a < numberOfBlocks; a++)
+	{
+		int smallestSAEvalue = 9999999;
+
+		for (int line = 0; line < imagePrev.getHeight(); line++)
+		{
+			for (int col = 0; col < imagePrev.getWidth(); col += 16)
+			{
+				//create temporary 16x16 block from data of previous picture
+				for (int i = 0; i < 16; i++)
+				{
+					for (int j = 0; j < 16; j++)
+					{
+						tempSAEblock.at(i).at(j) = vectorDataPrevious.at(line).at(col + j);
+					}
+				}
+				//compare temporary 16x16 block with a 16x16 block from the current picture via SAE
+				int SAE = SAEfunction(tempBlock, vectorPixelBocks.at(currentVectorPointer));
+
+				// current smallest divergent found from previous picture is placed in outgoing Vector for result picture
+				if (SAE < smallestSAEvalue)
+				{
+					vectorPixelBocks.at(currentVectorPointer) = tempBlock;
+					smallestSAEvalue = SAE;
+				}
+			}
+		}
+		currentVectorPointer++; 
+	}
 	
 	unsigned char * currDataArray;
 	currDataArray = (unsigned char*)malloc(imageCurr.getSize() * sizeof(unsigned char));
 	int currDataArrayPointer = 0;
-	for (int i = 0; i < imageCurr.getHeight(); i++)
+	
+	for (int a = 0; a < numberOfBlocks; a++)
 	{
-		for (int j = 0; j < imageCurr.getWidth(); j++)
+		for (int i = 0; i < 16; i++)
 		{
-			currDataArray[currDataArrayPointer++] = vectorDataCurrent.at(i).at(j);
+			for (int j = 0; j < 16; j++)
+			{
+				currDataArray[currDataArrayPointer++] = vectorPixelBocks.at(a).at(i).at(j);
+			}
 		}
 	}
-	result.setBuffer(dataArrayCurrent);
-	
-
-	// initiate SAE-search between imageCurr and imagePrev
-
-
-
-
-
-
-
-	/*
-	Hier folgt Ihr Code um für einen 16x16 Block des Bildes imageCurr einen
-	moeglichst aehnlichen Block im Bild imagePrev zu finden.
-	Dann schreiben Sie den ähnlichsten Block des vorausgehenden Bildes an die
-	Blockposition des aktuellen Bildes in das Bild result.
-
-	Achtung: Die Blockposition des Zielbildes bzw. des Bildes imageCurr ist
-	fuer x und y durch 16 teilbar. Aber, die Blockposition des aehnlichsten
-	Blockes im Bild imagePrev kann jede Pixelposition einnehmen und ist somit
-	nicht zwangslaeufig durch 16 teilbar.
 	*/
-
-
+	result.setBuffer(currDataArray);
+	
 	return true;
 }
 
