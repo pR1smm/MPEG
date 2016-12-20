@@ -26,6 +26,8 @@ int SAEfunction(std::vector<std::vector<int>> previousBlock, std::vector<std::ve
 	return result;
 }
 
+
+//useless comment
 bool reconstructImageByMotion(Image& result, Image& imagePrev, Image& imageCurr) 
 {
 
