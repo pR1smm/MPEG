@@ -1,4 +1,4 @@
-﻿Der Buildvorgang wurde am 20.12.2016 20:55:10 gestartet.
+﻿Der Buildvorgang wurde am 20.12.2016 23:12:34 gestartet.
      1>Projekt "C:\Users\Niklas Weigert\documents\visual studio 2013\Projects\MPEG\MPEG\MPEG.vcxproj" auf Knoten "2", Build Ziel(e).
      1>ClCompile:
          F:\Programme\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt MPEG.cpp
@@ -12,4 +12,4 @@
 
 Build erfolgreich.
 
-Verstrichene Zeit 00:00:00.43
+Verstrichene Zeit 00:00:00.45

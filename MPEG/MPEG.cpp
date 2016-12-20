@@ -100,14 +100,22 @@ bool reconstructImageByMotion(Image& result, Image& imagePrev, Image& imageCurr)
 	int currDataArrayPointer = 0;
 	int PixelBlockPointer = 0;
 	
-	
-
+	for (int line = 0; line < imageCurr.getHeight(); line++)
+	{
 		for (int col = 0; col < imageCurr.getWidth(); col++)
 		{
+			currDataArray[currDataArrayPointer++] = vectorPixelBocks.at(PixelBlockPointer).at(line % 16).at(col % 16);
+			if (col != 0)
+			{
+				if (col % 16 == 0 && PixelBlockPointer < numberOfBlocks)
+				{
+					PixelBlockPointer++;
+				}
 
-			currDataArray[currDataArrayPointer++] = vectorDataCurrent.at(line).at(col % 16);
-
+			}
 		}
+	}
+	
 	
 	
 
