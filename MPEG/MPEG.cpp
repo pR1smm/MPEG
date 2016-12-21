@@ -110,10 +110,27 @@ bool reconstructImageByMotion(Image& result, Image& imagePrev, Image& imageCurr)
 				if (col % 16 == 0 && PixelBlockPointer < numberOfBlocks)
 				{
 					PixelBlockPointer++;
+					
+				}
+				else if (col % 352 == 0 && PixelBlockPointer < numberOfBlocks)
+				{
+					
+					PixelBlockPointer -= 22;
+					std::cout << "decremented by 22, ";
 				}
 
 			}
 		}
+
+		if (line != 0)
+		{
+			if (line % 16 == 0)
+			{
+				PixelBlockPointer += 22;
+				std::cout << "incremented by 22, ";
+			}
+		}
+
 	}
 	
 	
